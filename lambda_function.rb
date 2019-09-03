@@ -8,12 +8,13 @@ require 'aws-sdk-s3'
 require 'json'
 
 ROLE_ARN = "arn:aws:iam::157385605725:role/lambda-terraform"
+ROLE_SESSION_NAME = "lambda-session"
 
 def lambda_handler(event:, context:)
   role_credentials = Aws::AssumeRoleCredentials.new(
     client: Aws::STS::Client.new,
     role_arn: "#{ROLE_ARN}",
-    role_session_name: "lambda-terraform"
+    role_session_name: "#{ROLE_SESSION_NAME}"
   )
   Aws.config.update({
   region: 'us-east-1',
@@ -38,7 +39,7 @@ def upload_tf_file_s3(file)
   role_credentials = Aws::AssumeRoleCredentials.new(
     client: Aws::STS::Client.new,
     role_arn: "#{ROLE_ARN}",
-    role_session_name: "lambda-terraform"
+    role_session_name: "#{ROLE_SESSION_NAME}"
   )
   s3 = Aws::S3::Resource.new(region: 'us-east-1', credentials: role_credentials)
   obj = s3.bucket('plutolegacy-iam-backups').object(file)
